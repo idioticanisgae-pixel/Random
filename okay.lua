@@ -8,75 +8,7 @@ getgenv().ZukaTech_Loaded = true
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
-local LogService = game:GetService("LogService")
-local DEBUG_MODE: boolean = true
-local function Log(message: string)
-    if DEBUG_MODE then
-        print(string.format("zukas %s", message))
-    end
-end
-local EnvironmentManager = {}
-function EnvironmentManager.WrapEnvironment(func: any, scriptInstance: Instance): any
-    local fenv = {}
-    local realFenv = {
-    script = scriptInstance
-    }
-    local fenvMt = {
-    __index = function(_, key)
-        return realFenv[key] or getfenv(0)[key]
-    end,
-    __newindex = function(_, key, value)
-        if realFenv[key] == nil then
-            getfenv(0)[key] = value
-        else
-            realFenv[key] = value
-        end
-    end,
-    __metatable = "The metatable is locked"
-    }
-    setmetatable(fenv, fenvMt)
-    local success, err = pcall(function()
-        setfenv(func, fenv)
-    end)
-    if not success then
-        warn("Failed to set function environment: " .. tostring(err))
-    end
-    return func
-end
-function EnvironmentManager.HookNewIndex(tbl: any, key: string, lockedValue: any)
-    if not getrawmetatable then
-        warn("Executor does not support 'getrawmetatable'. Hooking failed.")
-        return
-    end
-    local mt = getrawmetatable(tbl)
-    if not mt then return end
-    pcall(function()
-        local isReadOnly = false
-        if isreadonly then
-            isReadOnly = isreadonly(mt)
-        end
-        if setreadonly then
-            setreadonly(mt, false)
-        elseif make_writeable then
-            make_writeable(mt)
-        end
-        local originalNewindex = rawget(mt, "__newindex")
-        rawset(mt, "__newindex", function(t, k, v)
-            if k == key then
-                rawset(t, key, lockedValue)
-                Log("Intercepted __newindex attempt on key: " .. tostring(key))
-            elseif type(originalNewindex) == "function" then
-                originalNewindex(t, k, v)
-            else
-                rawset(t, k, v)
-            end
-        end)
-        if setreadonly and isReadOnly then
-            setreadonly(mt, true)
-        end
-    end)
-end
-return EnvironmentManager
+
 local Players = game:GetService("Players")
 local function getLocalPlayer()
     local lp = Players.LocalPlayer
