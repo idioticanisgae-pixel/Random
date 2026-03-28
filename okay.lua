@@ -18730,6 +18730,7 @@ RegisterCommand({
     Modules.NetworkFling.Config.SearchRadius = v
     DoNotif("Search radius set to " .. v, 2)
 end)
+
 Modules.AdonisPanel = {
     State = {
         Visible         = false,
@@ -21657,78 +21658,7 @@ end)
 warn("[AdonisPanel] v2 Ready — "..self.Config.ToggleKey.Name.." or ;apanel")
 end)
 end
-RegisterCommand({Name="apanel", Aliases={"adonis","console"}, Description="Toggle Adonis-style panel"}, function()
-    Modules.AdonisPanel:Toggle()
-end)
-RegisterCommand({Name="panelclear", Aliases={"cls"}, Description="Clear panel terminal"}, function()
-    if Modules.AdonisPanel.State.OutputScroll then
-        for _, c in ipairs(Modules.AdonisPanel.State.OutputScroll:GetChildren()) do
-            if c:IsA("TextLabel") then c:Destroy() end
-        end
-        Modules.AdonisPanel.State.TerminalLines = {}
-        Modules.AdonisPanel:Print("Cleared.", Modules.AdonisPanel.Config.Theme.SubText)
-    end
-end)
-RegisterCommand({Name="espoff", Aliases={}, Description="Disable all ESP"}, function()
-    for uid, data in pairs(Modules.AdonisPanel.State.ESPEnabled) do
-        data.Enabled = false
-    end
-    Modules.AdonisPanel:_espUpdate()
-    Modules.AdonisPanel:Print("All ESP disabled.", Modules.AdonisPanel.Config.Theme.SubText)
-end)
-function Modules.AdonisPanel:_watchPlayer(plr)
-    local T = self.Config.Theme
-    local function onCharAdded(char)
-        local hum = char:WaitForChild("Humanoid", 10)
-        if not hum then return end
-        local function getKiller()
-            local tag = hum:FindFirstChild("creator")
-            if tag then
-                local killer = tag.Value
-                if killer and killer ~= "" then
-                    if typeof(killer) == "Instance" and killer:IsA("Player") then
-                        return killer.DisplayName.." (@"..killer.Name..")"
-                    else
-                        return tostring(killer)
-                    end
-                end
-            end
-            local weaponTag = hum:FindFirstChild("weapon")
-            if weaponTag then return "weapon: "..tostring(weaponTag.Value) end
-            return "unknown"
-        end
-        hum.Died:Connect(function()
-            local killer = getKiller()
-            local isLocal = plr == LocalPlayer
-            local nameStr = isLocal
-                and ("You ("..plr.DisplayName..")")
-                or  (plr.DisplayName.." (@"..plr.Name..")")
-            local msg = "☠ "..nameStr.." died  —  killer: "..killer
-            local col = isLocal and T.Red or T.Yellow
-            self:Print(msg, col)
-            self:_toast(msg, col)
-        end)
-    end
-    if plr.Character then onCharAdded(plr.Character) end
-    plr.CharacterAdded:Connect(onCharAdded)
-end
-function Modules.AdonisPanel:_initDeathLogger()
-    local Players = game:GetService("Players")
-    for _, plr in ipairs(Players:GetPlayers()) do
-        self:_watchPlayer(plr)
-    end
-    Players.PlayerAdded:Connect(function(plr)
-        self:_watchPlayer(plr)
-    end)
-end
-function Modules.AdonisPanel:Initialize()
-    task.spawn(function()
-        task.wait(1)
-        self:_build()
-        self:_initDeathLogger()
-        warn("[AdonisPanel] v2 Ready — "..self.Config.ToggleKey.Name.." or ;apanel")
-    end)
-end
+
 RegisterCommand({
     Name        = "freezer",
     Aliases     = {"fanim"},
