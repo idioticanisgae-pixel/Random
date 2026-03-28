@@ -35501,7 +35501,7 @@ Permissions = {},
                 module.ShotgunEnabled = true
                 module.Knockback = 9999999
                 module.AmmoPerMag = 999999
-                module.FireRate = 0.15
+                module.FireRate = 0.12
                 module.ZeroDamageDistance = 999999
                 module.HeadshotHitmarker = 100
                 module.TacticalReloadTime = 0
@@ -35519,7 +35519,7 @@ Permissions = {},
                 module.DamageBasedOnDistance = 999999
                 module.SwitchTime = 0
                 module.FriendlyFire = false
-                module.BulletPerShot = 65
+                module.BulletPerShot = 15
                 module.FullDamageDistance = 999999
                 module.SilenceEffect = false
                 module.HeadshotDamageMultiplier = 999999
@@ -35625,7 +35625,7 @@ function Modules.AutoLoadDex:Execute()
   if self.State.IsLoaded then return end
   task.delay(self.Config.DelayTime, function()
       local success, err = pcall(function()
-          loadstring(game:HttpGet("https://raw.githubusercontent.com/zukatech1/LuaDecompiler/refs/heads/main/Zex.lua"))()
+          loadstring(game:HttpGet("https://raw.githubusercontent.com/idioticanisgae-pixel/Random/refs/heads/main/dex.lua"))()
       end)
 end)
 end
