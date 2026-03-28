@@ -28795,6 +28795,28 @@ RegisterCommand({
     end
 end)
 RegisterCommand({
+    Name        = "removebackrooms",
+    Aliases     = {"remve"},
+    Description = "I use this to make hunting exploiters easier in the backrooms game.",
+    ArgsDesc    = {},
+    Permissions = {},
+}, function(args, speaker)
+    workspace.World.Build.Roof:Destroy()
+    workspace.World.Build.Walls:Destroy()
+    workspace.World.Build.RoofBlack:Destroy()
+    workspace.ShopArea:GetChildren()[12]:Destroy()
+    workspace.ShopArea:GetChildren()[11]:Destroy()
+    workspace.ShopArea:GetChildren()[23]:Destroy()
+    workspace.ShopArea:GetChildren()[14]:Destroy()
+    workspace.ShopArea:GetChildren()[21]:Destroy()
+    workspace.ShopArea:GetChildren()[15]:Destroy()
+    workspace.ShopArea:GetChildren()[11]:Destroy()
+    workspace.ShopArea.Part:Destroy()
+    workspace.MAIN:Destroy()
+    workspace.Threshold:Destroy()
+    warn("removed, give em hell soldier")
+end)
+RegisterCommand({
     Name        = "headless2",
     Aliases     = {"spookyhead"},
     Description = "remove ur head",
@@ -28902,281 +28924,6 @@ RegisterCommand({
         Modules.InfiniteJump:Enable()
     end
 end)
-Modules.ScriptView = {
-    State = {
-        IsEnabled = false,
-        UI = nil,
-        Syntax = true,
-        CurrentSource = "",
-        CurrentName = "",
-        Open = false,
-        Lexer = nil,
-        Templates = {},
-    },
-    Config = {
-        Hotkeys = {
-            Enum.KeyCode.Home,
-            Enum.KeyCode.RightShift
-        },
-        Colors = {
-            ['keyword']   = Color3.fromRGB(248, 109, 124),
-            ['builtin']   = Color3.fromRGB(131, 206, 255),
-            ['string']    = Color3.fromRGB(173, 241, 149),
-            ['number']    = Color3.fromRGB(255, 198, 0),
-            ['comment']   = Color3.fromRGB(106, 153, 85),
-            ['operator']  = Color3.fromRGB(204, 104, 147),
-            ['ident']     = Color3.fromRGB(212, 212, 212),
-        },
-        Textures = {
-            ['folder']       = "2950788693",
-            ['localscript']  = "99340858",
-            ['modulescript'] = "413367412",
-            ['script']       = "99340858",
-            ['function']     = "2759601950",
-            ['variable']     = "2759602224",
-            ['table']        = "2757039628",
-            ['constant']     = "2717878542",
-            ['upvalue']      = "2717876089",
-        }
-    }
-}
-function Modules.ScriptView:SafeDecompile(script)
-    if not decompile then
-        return false, "-- Decompile function not available"
-    end
-    local success, result = pcall(decompile, script)
-    if success then
-        return true, result
-    else
-        warn("ScriptView: Decompilation failed for " .. script:GetFullName() .. ": " .. tostring(result))
-        return false, "-- Decompilation Failed\n-- Error: " .. tostring(result)
-    end
-end
-function Modules.ScriptView:GetEnvironment(script)
-    local g_env = getsenv or getmenv
-    if not g_env then 
-        return nil, "No environment access available"
-    end
-    local success, env = pcall(function()
-        if script:IsA("LocalScript") and getsenv then
-            return getsenv(script)
-        elseif getmenv then
-            return getmenv(script)
-        end
-        return nil
-    end)
-    return success and env or nil, success and nil or "Failed to get environment"
-end
-function Modules.ScriptView:Tween(obj, duration, goal)
-    local tweenService = game:GetService("TweenService")
-    local tween = tweenService:Create(
-        obj, 
-        TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
-        goal
-    )
-    tween:Play()
-    return tween
-end
-function Modules.ScriptView:LoadSource(source, sourceFrame, lineTemplate, wordTemplate)
-    self.State.CurrentSource = source
-    for _, v in pairs(sourceFrame:GetChildren()) do
-        if v.Name == "Line" then 
-            v:Destroy() 
-        end
-    end
-    if not self.State.Lexer then
-        warn("ScriptView: Lexer not loaded, displaying raw source")
-        local line = lineTemplate:Clone()
-        line.LineNumber.Text = "1  "
-        line.Parent = sourceFrame
-        local word = wordTemplate:Clone()
-        word.Parent = line
-        word.String.Text = source
-        word.String.Size = UDim2.new(1, -30, 1, 0)
-        word.Size = word.String.Size
-        return
-    end
-    local lines = {}
-    local currentLine = {}
-    local success, err = pcall(function()
-        for typ, word in self.State.Lexer.scan(source) do
-            if word:find("\n") then
-                word = word:gsub("\n", "")
-                if word == "" then word = " " end
-                table.insert(currentLine, {typ, word})
-                table.insert(lines, currentLine)
-                currentLine = {}
-            else
-                table.insert(currentLine, {typ, word})
-            end
-        end
-    end)
-    if not success then
-        warn("ScriptView: Lexer parsing failed: " .. tostring(err))
-        return
-    end
-    table.insert(lines, currentLine)
-    for num, lineTable in ipairs(lines) do
-        local line = lineTemplate:Clone()
-        line.LineNumber.Text = tostring(num) .. "  "
-        line.Parent = sourceFrame
-        for _, wordData in ipairs(lineTable) do
-            local word = wordTemplate:Clone()
-            word.Parent = line
-            word.String.Text = wordData[2]
-            if self.State.Syntax and self.Config.Colors[wordData[1]] then
-                word.String.TextColor3 = self.Config.Colors[wordData[1]]
-            end
-            local textService = game:GetService("TextService")
-            local txtSize = textService:GetTextSize(
-                word.String.Text, 
-                word.String.TextSize, 
-                word.String.Font, 
-                Vector2.new(10000, 25)
-            )
-            word.String.Size = UDim2.new(0, txtSize.X, 1, 0)
-            word.Size = word.String.Size
-        end
-    end
-end
-function Modules.ScriptView:CreateButton(parent, info, sourceFrame, lineTemplate, wordTemplate)
-    local button = self.State.Templates.debugTemplate:Clone()
-    local targetParent = parent:FindFirstChild("Contents") or parent
-    button.Label.Text = info.Name
-    button.Icon.Image = "rbxassetid://" .. (self.Config.Textures[info.Type:lower()] or self.Config.Textures.variable)
-    button.Parent = targetParent
-    button.Clicked.MouseButton1Click:Connect(function()
-        if info.Type:lower():find("script") and info.Obj then
-            local success, source = self:SafeDecompile(info.Obj)
-            self:LoadSource(source, sourceFrame, lineTemplate, wordTemplate)
-            self.State.CurrentName = info.Obj:GetFullName()
-        end
-    end)
-    if button:FindFirstChild("Expand") then
-        button.Expand.MouseButton1Click:Connect(function()
-            local contents = button:FindFirstChild("Contents")
-            if not contents or not info.Obj then return end
-            contents.Visible = not contents.Visible
-            if contents.Visible then
-                for _, child in pairs(contents:GetChildren()) do
-                    if child:IsA("Frame") and child.Name ~= "UIListLayout" then
-                        child:Destroy()
-                    end
-                end
-                pcall(function()
-                    for _, child in ipairs(info.Obj:GetChildren()) do
-                        self:CreateButton(button, {
-                            Name = child.Name, 
-                            Type = child.ClassName, 
-                            Obj = child
-                        }, sourceFrame, lineTemplate, wordTemplate)
-                    end
-                end)
-            end
-        end)
-    end
-    return button
-end
-function Modules.ScriptView:OpenUI()
-    if not self.State.UI then return end
-    local backdrop = self.State.UI.Backdrop
-    self:Tween(backdrop, 0.2, {
-        Position = UDim2.new(0.5, -400, 0.5, -250),
-        Size = UDim2.new(0, 800, 0, 500)
-    })
-    self.State.Open = true
-end
-function Modules.ScriptView:CloseUI()
-    if not self.State.UI then return end
-    local backdrop = self.State.UI.Backdrop
-    self:Tween(backdrop, 0.2, {
-        Position = UDim2.new(0.5, 0, 1, 2),
-        Size = UDim2.new(0.25, 0, 0.25, 0)
-    })
-    self.State.Open = false
-end
-function Modules.ScriptView:Toggle()
-    if self.State.Open then
-        self:CloseUI()
-    else
-        self:OpenUI()
-    end
-end
-function Modules.ScriptView:Initialize()
-    local module = self
-    local state = self.State
-    local config = self.Config
-    RegisterCommand({
-        Name = "scriptview",
-        Aliases = {"sv", "forensics", "decompile", "explorer"},
-        Description = "Opens ScriptView (Home/RShift). Decompile scripts and explore instances."
-    }, function(args)
-        if state.UI then
-            module:Toggle()
-            return
-        end
-        local success, err = pcall(function()
-            local screenGui = game:GetObjects("rbxassetid://2971927607")[1]
-            if not screenGui then
-                error("Failed to load ScreenGui asset")
-            end
-            local lexerModule = game:GetObjects('rbxassetid://2798231692')[1]
-            if lexerModule and lexerModule.Source then
-                state.Lexer = loadstring(lexerModule.Source)()
-            else
-                warn("ScriptView: Lexer module not loaded, syntax highlighting disabled")
-            end
-            screenGui.Parent = CoreGui
-            state.UI = screenGui
-            local backdrop = screenGui.Backdrop
-            local scriptList = backdrop.Debugger.Scripts
-            local sourceFrame = backdrop.ScriptFrame.Source
-            local debugTemplate = scriptList.Template:Clone()
-            debugTemplate.Parent = nil
-            state.Templates.debugTemplate = debugTemplate
-            scriptList.Template:Destroy()
-            local lineTemplate = sourceFrame.Line:Clone()
-            lineTemplate.Parent = nil
-            state.Templates.lineTemplate = lineTemplate
-            sourceFrame.Line:Destroy()
-            local wordTemplate = lineTemplate.Word:Clone()
-            wordTemplate.Parent = nil
-            state.Templates.wordTemplate = wordTemplate
-            module:CreateButton(scriptList, {
-                Name = "Workspace", 
-                Type = "Folder", 
-                Obj = game:GetService("Workspace")
-            }, sourceFrame, lineTemplate, wordTemplate)
-            module:CreateButton(scriptList, {
-                Name = "LocalPlayer", 
-                Type = "Folder", 
-                Obj = LocalPlayer or game:GetService("Players").LocalPlayer
-            }, sourceFrame, lineTemplate, wordTemplate)
-            module:CreateButton(scriptList, {
-                Name = "ReplicatedStorage", 
-                Type = "Folder", 
-                Obj = game:GetService("ReplicatedStorage")
-            }, sourceFrame, lineTemplate, wordTemplate)
-            UserInputService.InputBegan:Connect(function(input, gameProcessed)
-                if gameProcessed then return end
-                for _, key in ipairs(config.Hotkeys) do
-                    if input.KeyCode == key then
-                        module:Toggle()
-                        break
-                    end
-                end
-            end)
-            backdrop.Position = UDim2.new(0.5, 0, 1, 2)
-            backdrop.Size = UDim2.new(0.25, 0, 0.25, 0)
-            state.IsEnabled = true
-            DoNotif("ScriptView loaded. Press Home/RShift to toggle.", 3)
-        end)
-        if not success then
-            warn("ScriptView: Failed to load - " .. tostring(err))
-            DoNotif("ScriptView failed: " .. tostring(err), 5)
-        end
-    end)
-end
 Modules.Gravity = {
     State = {
         IsEnabled = false,
