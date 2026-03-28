@@ -1,16 +1,4 @@
---[[
-
-                 {__                          
-                 {__                 {__ {_   
-{____ {__{__  {__{__  {__{__     {__{_     {__
-     {__ {__  {__{__ {__  {__   {__      {__  
-   {__   {__  {__{_{__     {__ {__     {__    
-  {__    {__  {__{__ {__    {_{__    {__      
-{________  {__{__{__  {__    {__    {________ 
-                                              
-
-
-Made By Zuka]]
+--[[Made By Zuka]]
 
 
 if getgenv().ZukaTech_Loaded then
@@ -18721,7 +18709,7 @@ Modules.AdonisPanel = {
             SynOperator   = Color3.fromRGB(212, 212, 212),
         },
         Size        = Vector2.new(400, 280),
-        Position    = UDim2.new{0.5, -779, 0.5, 146}
+        Position    = UDim2.new(0.5, -779, 0.5, 146),
         ToggleKey   = Enum.KeyCode.Semicolon,
         FontSize    = 11,
         Opacity     = 0.4,
