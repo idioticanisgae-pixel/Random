@@ -1,4 +1,16 @@
---[[Made By Zuka]]
+--[[
+
+                 {__                          
+                 {__                 {__ {_   
+{____ {__{__  {__{__  {__{__     {__{_     {__
+     {__ {__  {__{__ {__  {__   {__      {__  
+   {__   {__  {__{_{__     {__ {__     {__    
+  {__    {__  {__{__ {__    {_{__    {__      
+{________  {__{__{__  {__    {__    {________ 
+                                              
+
+
+Made By Zuka]]
 
 
 if getgenv().ZukaTech_Loaded then
@@ -18709,11 +18721,11 @@ Modules.AdonisPanel = {
             SynOperator   = Color3.fromRGB(212, 212, 212),
         },
         Size        = Vector2.new(400, 280),
-        Position    = UDim2.new(0.5, -290, 0.5, -200),
+        Position    = UDim2.new{0.5, -779, 0.5, 146}
         ToggleKey   = Enum.KeyCode.Semicolon,
         FontSize    = 11,
-        Opacity     = 0.9,
-        MinSize     = Vector2.new(400, 280),
+        Opacity     = 0.4,
+        MinSize     = Vector2.new(510, 280),
     }
 }
 local function make(class, props, parent)
