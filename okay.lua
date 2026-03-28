@@ -8,7 +8,6 @@ getgenv().ZukaTech_Loaded = true
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
-
 local Players = game:GetService("Players")
 local function getLocalPlayer()
     local lp = Players.LocalPlayer
@@ -18,45 +17,6 @@ local function getLocalPlayer()
     end
     return lp
 end
-local _GC_START = collectgarbage("count")
-local _TIMESTAMP = os.clock()
-local set_ro = setreadonly or (make_writeable and function(t, v) if v then make_readonly(t) else make_writeable(t) end end)
-local get_mt = getrawmetatable or debug.getmetatable
-local hook_meta = hookmetamethod
-local new_ccl = newcclosure or function(f) return f end
-local check_caller = checkcaller or function() return false end
-local clone_func = clonefunction or function(f) return f end
-local function dismantle_readonly(target)
-    if type(target) ~= "table" then return end
-    pcall(function()
-        if set_ro then set_ro(target, false) end
-        local mt = get_mt(target)
-        if mt and set_ro then set_ro(mt, false) end
-    end)
-end
-local function protect_interface(instance)
-    local protector = (get_hidden_gui or (syn and syn.protect_gui))
-    if protector then pcall(protector, instance) end
-end
-local function get_memory_signature(target_name)
-    local found = 0
-    for _, obj in ipairs(getgc(true)) do
-        if type(obj) == "function" then
-            local info = debug.getinfo(obj)
-            if info.name == target_name or (info.source and info.source:find(target_name)) then
-                found = found + 1
-            end
-        end
-    end
-    return found
-end
-local Services = setmetatable({}, {
-    __index = function(t, k)
-        local s = game:GetService(k)
-        if s then t[k] = s end
-        return s
-    end
-})
 local Workspace = game:GetService("Workspace")
 local ContentProvider = game:GetService("ContentProvider")
 local RunService = game:GetService("RunService")
@@ -119,13 +79,13 @@ function Utilities.calculateLevenshteinDistance(s1: string, s2: string): number
                 matrix[i - 1][j] + 1,
                 matrix[i][j - 1] + 1,
                 matrix[i - 1][j - 1] + cost
-            )
-        end
-    end
-    return matrix[len1][len2]
-end
-        local Prefix = ";"
-        local Commands = {}
+              )
+          end
+      end
+       return matrix[len1][len2]
+  end
+   local Prefix = ";"
+      local Commands = {}
         local CommandInfo = {}
         local Modules = {}
         local NotificationManager = {}
@@ -18748,11 +18708,11 @@ Modules.AdonisPanel = {
             SynFunction   = Color3.fromRGB(220, 220, 170),
             SynOperator   = Color3.fromRGB(212, 212, 212),
         },
-        Size        = Vector2.new(580, 400),
+        Size        = Vector2.new(400, 280),
         Position    = UDim2.new(0.5, -290, 0.5, -200),
         ToggleKey   = Enum.KeyCode.Semicolon,
-        FontSize    = 14,
-        Opacity     = 0.08,
+        FontSize    = 11,
+        Opacity     = 0.9,
         MinSize     = Vector2.new(400, 280),
     }
 }
@@ -18767,8 +18727,8 @@ local function stroke(t,c,p) return make("UIStroke",  {Thickness=t, Color=c or C
 local function scrollFrame(props, parent)
     local f = make("ScrollingFrame", {
         BackgroundColor3      = props.BackgroundColor3 or Color3.fromRGB(22,22,22),
-        BorderSizePixel       = 0,
-        ScrollBarThickness    = 3,
+        BorderSizePixel       = 0.5,
+        ScrollBarThickness    = 2,
         ScrollBarImageColor3  = Color3.fromRGB(80,80,80),
         CanvasSize            = UDim2.new(0,0,0,0),
         AutomaticCanvasSize   = Enum.AutomaticSize.Y,
@@ -19045,14 +19005,14 @@ function Modules.AdonisPanel:_build()
     }, titleBar)
     local titleLabel = make("TextLabel", {
         Size=UDim2.new(1,-80,1,0), Position=UDim2.new(0,10,0,0),
-        BackgroundTransparency=1, Text="Adonis  //  Zuka's Panel",
+        BackgroundTransparency=1, Text="Adonis ~ //  ",
         TextColor3=T.Text, Font=Enum.Font.SourceSansLight, TextSize=15,
         TextXAlignment=Enum.TextXAlignment.Left, ZIndex=4,
     }, titleBar)
     local closeBtn = make("TextButton", {
         Size=UDim2.fromOffset(30,20), Position=UDim2.new(1,-35,0,3),
         BackgroundColor3=T.Accent, BackgroundTransparency=0.25, BorderSizePixel=0,
-        Text="x", TextColor3=Color3.fromRGB(220,220,220),
+        Text="X", TextColor3=Color3.fromRGB(220,220,220),
         Font=Enum.Font.Cartoon, TextSize=18, ZIndex=5,
     }, titleBar)
     corner(4, closeBtn)
@@ -19109,7 +19069,7 @@ function Modules.AdonisPanel:_build()
     local inputBox = make("TextBox", {
         Size=UDim2.new(1,-25,1,0), Position=UDim2.new(0,20,0,0),
         BackgroundTransparency=1, Text="",
-        PlaceholderText="Enter command...", PlaceholderColor3=T.SubText,
+        PlaceholderText="Send command.", PlaceholderColor3=T.SubText,
         TextColor3=T.Text, Font=Enum.Font.SourceSans,
         TextSize=self.Config.FontSize, TextXAlignment=Enum.TextXAlignment.Left,
         ClearTextOnFocus=false, ZIndex=4,
@@ -19188,7 +19148,7 @@ function Modules.AdonisPanel:_build()
     make("UIPadding", {PaddingLeft=UDim.new(0,6)}, aliasInput)
     make("TextLabel", {
         Size=UDim2.fromOffset(12,32), Position=UDim2.new(0.25,0,0,0),
-        BackgroundTransparency=1, Text="→", TextColor3=T.SubText,
+        BackgroundTransparency=1, Text=">", TextColor3=T.SubText,
         Font=Enum.Font.SourceSansBold, TextSize=14, ZIndex=4,
     }, macroAddBar)
     local cmdInput2 = make("TextBox", {
@@ -19212,7 +19172,7 @@ function Modules.AdonisPanel:_build()
     local snippetDropLabel = make("TextButton", {
         Size=UDim2.new(0,120,1,-6), Position=UDim2.fromOffset(5,3),
         BackgroundColor3=T.InputBg, BorderSizePixel=0,
-        Text="▾ New Script", TextColor3=T.Text,
+        Text="New", TextColor3=T.Text,
         Font=Enum.Font.SourceSans, TextSize=13, ZIndex=4,
     }, scriptBar)
     corner(4, snippetDropLabel)
@@ -19225,7 +19185,7 @@ function Modules.AdonisPanel:_build()
     local runBtn = make("TextButton", {
         Size=UDim2.fromOffset(52,24), Position=UDim2.fromOffset(186,3),
         BackgroundColor3=T.Green, BackgroundTransparency=0.3, BorderSizePixel=0,
-        Text="▶ Run", TextColor3=T.Text, Font=Enum.Font.SourceSansBold, TextSize=13, ZIndex=4,
+        Text="Run", TextColor3=T.Text, Font=Enum.Font.SourceSansBold, TextSize=13, ZIndex=4,
     }, scriptBar)
     corner(4, runBtn)
     local clearScriptBtn = make("TextButton", {
@@ -19269,7 +19229,7 @@ function Modules.AdonisPanel:_build()
         Text="-- write your script here\n",
         TextColor3=Color3.fromRGB(0,0,0,0),
         PlaceholderText="", PlaceholderColor3=Color3.fromRGB(0,0,0),
-        Font=Enum.Font.Code, TextSize=13,
+        Font=Enum.Font.Code, TextSize=10,
         TextXAlignment=Enum.TextXAlignment.Left,
         TextYAlignment=Enum.TextYAlignment.Top,
         MultiLine=true, ClearTextOnFocus=false,
@@ -19377,7 +19337,7 @@ function Modules.AdonisPanel:_build()
     runBtn.MouseButton1Click:Connect(function()
         local code = codeInput.Text
         if code:match("^%s*$") then return end
-        self:Print("▶ Executing script...", T.Green)
+        self:Print("Executing script!", T.Green)
         local fn, err = loadstring(code)
         if not fn then
             self:Print("Syntax error: "..tostring(err), T.Red)
@@ -19551,9 +19511,9 @@ function Modules.AdonisPanel:_build()
     make("UIPadding", {PaddingLeft=UDim.new(0,6)}, decompTargetBox)
     local decompRunBtn = make("TextButton", {
         Size=UDim2.fromOffset(80,24), Position=UDim2.new(1,-193,0,3),
-        BackgroundColor3=T.Green, BackgroundTransparency=0.3, BorderSizePixel=0,
-        Text="▶ Decompile", TextColor3=T.Text,
-        Font=Enum.Font.SourceSansBold, TextSize=12, ZIndex=4,
+        BackgroundColor3=T.Green, BackgroundTransparency=0.3, BorderSizePixel=0.4,
+        Text="Build", TextColor3=T.Text,
+        Font=Enum.Font.SourceSansBold, TextSize=10, ZIndex=4,
     }, decompBar)
     corner(4, decompRunBtn)
     local decompCopyBtn = make("TextButton", {
@@ -19617,7 +19577,7 @@ function Modules.AdonisPanel:_build()
         Size=UDim2.new(1,-8,0,0), Position=UDim2.fromOffset(4,4),
         AutomaticSize=Enum.AutomaticSize.Y,
         BackgroundTransparency=1,
-        Text="-- Decompiler ready.\n-- Enter a script path above and hit ▶ Decompile.",
+        Text="-- Decompiler ready.\n-- Enter Path.",
         RichText=false, TextColor3=T.SubText,
         Font=Enum.Font.Code, TextSize=13,
         TextXAlignment=Enum.TextXAlignment.Left,
@@ -19748,11 +19708,11 @@ end
                             DecompilerMode       = "disasm",
                             ReaderFloatPrecision = 7,
                             DecompilerTimeout    = 10,
-                            ShowDebugInformation = false,
+                            ShowDebugInformation = true,
                             ShowInstructionLines = false,
                             ShowOperationIndex   = false,
                             ShowOperationNames   = false,
-                            ShowTrivialOperations= false,
+                            ShowTrivialOperations= true,
                             UseTypeInfo          = true,
                             ListUsedGlobals      = true,
                             CleanMode            = true,
@@ -20004,7 +19964,7 @@ end
         Decompiler  = decompPage,  -- ← add this
 }
     win.Visible = false
-    self:Print("Adonis  //  Zuka's Panel  v2", T.Accent)
+    self:Print("Adonis has been loaded.", T.Accent)
     self:Print("Toggle: "..self.Config.ToggleKey.Name.."  |  Prefix: "..Prefix, T.SubText)
     self:Print(string.rep("─", 52), Color3.fromRGB(55,55,55))
 end
