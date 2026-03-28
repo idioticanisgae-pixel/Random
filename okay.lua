@@ -18779,7 +18779,7 @@ Modules.AdonisPanel = {
         },
         Size        = Vector2.new(580, 400),
         Position    = UDim2.new(0.5, -290, 0.5, -200),
-        ToggleKey   = Enum.KeyCode.P,
+        ToggleKey   = Enum.KeyCode.Semicolon,
         FontSize    = 14,
         Opacity     = 0.08,
         MinSize     = Vector2.new(400, 280),
