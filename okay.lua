@@ -18755,6 +18755,7 @@ Modules.AdonisPanel = {
         ShowTimestamps  = false,
         _cmdPool        = {},
         _plrPool        = {},
+        Pages           = {},
     },
     Config = {
         Theme = {
@@ -19784,7 +19785,6 @@ function Modules.AdonisPanel:_build()
         decompSetOutput("-- Cleared.", false)
         self.State.DecompLastText = ""
     end)
-    self.State.Pages.Decompiler = decompPage
     local tabDefs = {
         {Name="Terminal",   Page=termPage},
         {Name="Commands",   Page=cmdPage},
@@ -19986,10 +19986,11 @@ function Modules.AdonisPanel:_build()
     self.State.AliasInput   = aliasInput
     self.State.CmdInput     = cmdInput2
     self.State.Pages        = {
-        Terminal = termPage, Commands = cmdPage, Players = plrPage,
-        Logs     = logsPage, Macros   = macroPage,
-        Scripts  = scriptPage, Settings = settingsPage,
-    }
+        Terminal    = termPage,    Commands = cmdPage, Players  = plrPage,
+        Logs        = logsPage,    Macros   = macroPage,
+        Scripts     = scriptPage,  Settings = settingsPage,
+        Decompiler  = decompPage,  -- ← add this
+}
     win.Visible = false
     self:Print("Adonis  //  Zuka's Panel  v2", T.Accent)
     self:Print("Toggle: "..self.Config.ToggleKey.Name.."  |  Prefix: "..Prefix, T.SubText)
