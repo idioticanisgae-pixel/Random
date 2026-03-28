@@ -19663,23 +19663,66 @@ function Modules.AdonisPanel:_build()
         self.State.DecompLastText = text
     end
     local function resolveScript(path)
-        local parts = {}
-        for part in path:gmatch("[^%.]+") do table.insert(parts, part) end
-        local cur = game
-        for i, part in ipairs(parts) do
-            if i == 1 then
-                local top = {
-                    game=game, workspace=workspace,
-                    ["game"]=game, ["workspace"]=workspace,
-                }
-                cur = top[part:lower()] or game:FindFirstChild(part)
-            else
-                if not cur then return nil end
-                cur = cur:FindFirstChild(part)
-            end
-        end
-        return cur
+    -- Handle game:GetService("ServiceName") style calls in the path
+    path = path:gsub('game:GetService%("([^"]+)"%)', function(svc)
+        return svc
+    end)
+    path = path:gsub("game:GetService%('([^']+)'%)", function(svc)
+        return svc
+    end)
+
+    local parts = {}
+    for part in path:gmatch("[^%.]+") do
+        table.insert(parts, part)
     end
+
+    local serviceAliases = {
+        players        = "Players",
+        workspace      = "Workspace",
+        lighting       = "Lighting",
+        replicatedstorage = "ReplicatedStorage",
+        replicatedfirst   = "ReplicatedFirst",
+        serverstorage     = "ServerStorage",
+        serverscriptservice = "ServerScriptService",
+        startergui     = "StarterGui",
+        starterpack    = "StarterPack",
+        starterplayer  = "StarterPlayer",
+        soundservice   = "SoundService",
+        chat           = "Chat",
+        teams          = "Teams",
+    }
+
+    local cur = game
+    for i, part in ipairs(parts) do
+        if i == 1 then
+            local lo = part:lower()
+            if lo == "game" then
+                cur = game
+            elseif lo == "workspace" then
+                cur = workspace
+            else
+                -- Try GetService first (handles "Players", "ReplicatedStorage", etc.)
+                local realName = serviceAliases[lo] or part
+                local ok, svc = pcall(function() return game:GetService(realName) end)
+                if ok and svc then
+                    cur = svc
+                else
+                    cur = game:FindFirstChild(part)
+                end
+            end
+        elseif part == "LocalPlayer" then
+            -- game:GetService("Players").LocalPlayer
+            local ok, lp = pcall(function()
+                return game:GetService("Players").LocalPlayer
+            end)
+            cur = (ok and lp) or nil
+        else
+            if not cur then return nil end
+            cur = cur:FindFirstChild(part)
+        end
+    end
+    return cur
+end
     decompRunBtn.MouseButton1Click:Connect(function()
         local path = decompTargetBox.Text:match("^%s*(.-)%s*$")
         if path == "" then
