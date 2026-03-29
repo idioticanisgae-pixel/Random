@@ -19029,7 +19029,7 @@ function Modules.PartFlingerV2:Initialize()
             end
             local n = 0
             for part in pairs(MASS_CLAIMED) do tripleReleasePart(part); n += 1 end
-            print(string.format("✓ Released %d workspace parts", n))
+            print(string.format(" Released %d workspace parts", n))
             return
         end
         massClaimActive = true
@@ -19044,7 +19044,7 @@ function Modules.PartFlingerV2:Initialize()
             end
             local held = 0
             for _ in pairs(MASS_CLAIMED) do held += 1 end
-            print(string.format("✓ Triple-claimed %d workspace parts", held))
+            print(string.format(" Triple-claimed %d workspace parts", held))
         end)
         if self.State._massAddedConn then self.State._massAddedConn:Disconnect() end
         self.State._massAddedConn = Workspace.DescendantAdded:Connect(function(v)
@@ -19056,11 +19056,11 @@ function Modules.PartFlingerV2:Initialize()
     end
     function NetworkClaim:ClaimSelected()
         local obj = self.State.SelectedObject
-        if not obj then print("⚠ No object selected"); return end
+        if not obj then print(" No object selected"); return end
         local parts = self:GetAllParts(obj)
         if #parts == 0 then print("✗ No valid parts found"); return end
         for _, data in pairs(self.State.ClaimedObjects) do
-            if data.Object == obj then print("⚠ Already claimed"); return end
+            if data.Object == obj then print(" Already claimed"); return end
         end
         local connections = {}
         for _, part in ipairs(parts) do
@@ -19083,20 +19083,20 @@ function Modules.PartFlingerV2:Initialize()
             Name        = obj.Name,
             PartCount   = #parts,
         })
-        print(string.format("✓ Claimed: %s (%d parts)", obj.Name, #parts))
+        print(string.format(" Claimed: %s (%d parts)", obj.Name, #parts))
         self:UpdateDisplay()
     end
     function NetworkClaim:ClaimEntireModel()
         local obj = self.State.SelectedObject
-        if not obj then print("⚠ No object selected"); return end
+        if not obj then print(" No object selected"); return end
         local model = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model")
-        if not model then print("⚠ Not in a model"); return end
+        if not model then print(" Not in a model"); return end
         self.State.SelectedObject = model
         self:ClaimSelected()
     end
     function NetworkClaim:ClaimAllDescendants()
         local obj = self.State.SelectedObject
-        if not obj then print("⚠ No object selected"); return end
+        if not obj then print(" No object selected"); return end
         local n = 0
         for _, d in ipairs(obj:GetDescendants()) do
             if d:IsA("BasePart") then
@@ -19105,11 +19105,11 @@ function Modules.PartFlingerV2:Initialize()
                 n += 1
             end
         end
-        print(string.format("✓ Claimed %d descendants", n))
+        print(string.format(" Claimed %d descendants", n))
     end
     function NetworkClaim:ReleaseSelected()
         local obj = self.State.SelectedObject
-        if not obj then print("⚠ No object selected"); return end
+        if not obj then print(" No object selected"); return end
         for i, data in ipairs(self.State.ClaimedObjects) do
             if data.Object == obj then
                 for _, c in ipairs(data.Connections) do if c then c:Disconnect() end end
@@ -19118,15 +19118,15 @@ function Modules.PartFlingerV2:Initialize()
                     pcall(function() part:SetNetworkOwnershipAuto() end)
                 end
                 table.remove(self.State.ClaimedObjects, i)
-                print(string.format("✓ Released: %s", data.Name))
+                print(string.format(" Released: %s", data.Name))
                 self:UpdateDisplay()
                 return
             end
         end
-        print("⚠ Object not claimed")
+        print(" Object not claimed")
     end
     function NetworkClaim:ReleaseAll()
-        if #self.State.ClaimedObjects == 0 then print("⚠ Nothing to release"); return end
+        if #self.State.ClaimedObjects == 0 then print(" Nothing to release"); return end
         local n = #self.State.ClaimedObjects
         for _, data in ipairs(self.State.ClaimedObjects) do
             for _, c in ipairs(data.Connections) do if c then c:Disconnect() end end
@@ -19136,12 +19136,12 @@ function Modules.PartFlingerV2:Initialize()
             end
         end
         self.State.ClaimedObjects = {}
-        print(string.format("✓ Released %d objects", n))
+        print(string.format(" Released %d objects", n))
         self:UpdateDisplay()
     end
     function NetworkClaim:SelectObject(obj)
         if not obj or (not obj:IsA("Model") and not obj:IsA("BasePart")) then
-            print("⚠ Invalid selection"); return
+            print(" Invalid selection"); return
         end
         if self.State.SelectedObject then
             local old = self.State.SelectedObject:FindFirstChild("NetworkClaim_Selection")
@@ -19154,7 +19154,7 @@ function Modules.PartFlingerV2:Initialize()
         box.LineThickness  = 0.05
         box.Color3        = Color3.fromRGB(255, 255, 0)
         box.Parent        = obj
-        print(string.format("✓ Selected: %s", obj.Name))
+        print(string.format(" Selected: %s", obj.Name))
         self:UpdateDisplay()
     end
     function NetworkClaim:UpdateDisplay()
@@ -19444,7 +19444,7 @@ function Modules.PartFlingerV2:Initialize()
                 autoTouchedParts = {}
             end
         end)
-        sectionHeader("NO COLLISION", 5)
+        sectionHeader("NO COLLISION - Buggy, keep off.", 5)
         local ncRow = mkHalfRow(6)
         local ncPlayerBtn = Instance.new("TextButton", ncRow)
         ncPlayerBtn.Size             = UDim2.new(0.5,-3,1,0)
@@ -19488,7 +19488,7 @@ function Modules.PartFlingerV2:Initialize()
         selLabel.BackgroundColor3 = Color3.fromRGB(35,35,45)
         selLabel.BorderSizePixel  = 0
         selLabel.Font             = Enum.Font.GothamMedium
-        selLabel.Text             = "Click an object in-world to select"
+        selLabel.Text             = "Click an object to select"
         selLabel.TextColor3       = Color3.fromRGB(200,200,200)
         selLabel.TextSize         = 12
         Instance.new("UICorner", selLabel).CornerRadius = UDim.new(0,6)
@@ -19557,7 +19557,7 @@ function Modules.PartFlingerV2:Initialize()
         local claimDescBtn  = mkBtn("CLAIM ALL DESCENDANTS", Color3.fromRGB(100,150,200),17)
         claimModelBtn.MouseButton1Click:Connect(function() NetworkClaim:ClaimEntireModel()    end)
         claimDescBtn.MouseButton1Click:Connect(function()  NetworkClaim:ClaimAllDescendants() end)
-        local claimAllBtn = mkBtn("⚡ CLAIM ALL WORKSPACE: OFF", Color3.fromRGB(30,60,30), 18)
+        local claimAllBtn = mkBtn(" CLAIM ALL WORKSPACE: OFF", Color3.fromRGB(30,60,30), 18)
         do
             local s2 = Instance.new("UIStroke", claimAllBtn)
             s2.Color=Color3.fromRGB(0,220,80); s2.Thickness=1.5
@@ -19582,7 +19582,7 @@ function Modules.PartFlingerV2:Initialize()
         claimAllBtn.MouseButton1Click:Connect(function()
             NetworkClaim:ClaimAllWorkspace()
             claimAllBtn.Text             = massClaimActive
-                and "⚡ CLAIM ALL WORKSPACE: ON" or "⚡ CLAIM ALL WORKSPACE: OFF"
+                and " CLAIM ALL WORKSPACE: ON" or " CLAIM ALL WORKSPACE: OFF"
             claimAllBtn.BackgroundColor3 = massClaimActive
                 and Color3.fromRGB(0,100,30) or Color3.fromRGB(30,60,30)
         end)
@@ -19639,7 +19639,7 @@ function Modules.PartFlingerV2:Initialize()
         modeBtn.AutoButtonColor  = false
         Instance.new("UICorner", modeBtn).CornerRadius = UDim.new(0,6)
         local bsRow = mkHalfRow(32)
-        local bringBtn = mkHalfBtn(bsRow, "Bring: Off", Color3.fromRGB(50,50,70))
+        local bringBtn = mkHalfBtn(bsRow, "Off", Color3.fromRGB(50,50,70))
         local spectateBtn = mkHalfBtn(bsRow, "Spectate: Off", Color3.fromRGB(50,50,70))
         local flingerStatus = Instance.new("TextLabel", scroll)
         flingerStatus.LayoutOrder            = 33
@@ -19710,7 +19710,7 @@ function Modules.PartFlingerV2:Initialize()
         end
         local function stopBlackhole()
             BH.blackHoleActive = false
-            bringBtn.Text             = "Bring: Off"
+            bringBtn.Text             = "Off"
             bringBtn.BackgroundColor3 = Color3.fromRGB(50,50,70)
             if BH.DescendantAddedConn then BH.DescendantAddedConn:Disconnect(); BH.DescendantAddedConn=nil end
             if BH.cycleConnection     then BH.cycleConnection:Disconnect();     BH.cycleConnection=nil     end
@@ -19721,7 +19721,7 @@ function Modules.PartFlingerV2:Initialize()
             task.spawn(function()
                 touchAllParts()
                 BH.blackHoleActive = true
-                bringBtn.Text             = "Bring: On"
+                bringBtn.Text             = "On"
                 bringBtn.BackgroundColor3 = Color3.fromRGB(160,35,35)
                 local tc    = BH.sendTarget.Character
                 local tRoot = tc and tc:FindFirstChild("HumanoidRootPart")
@@ -19950,7 +19950,7 @@ function Modules.PartFlingerV2:Initialize()
                     missilePartLbl.TextColor3=Color3.fromRGB(255,80,80); return
                 end
                 missileStart()
-                missileLaunchBtn.Text="LAUNCH: ON  🔴"
+                missileLaunchBtn.Text="LAUNCH: ON "
                 missileLaunchBtn.BackgroundColor3=Color3.fromRGB(220,40,40)
                 task.spawn(function()
                     while BH.MISSILE.Active do task.wait(0.5) end
@@ -19999,7 +19999,7 @@ function Modules.PartFlingerV2:Initialize()
         if self.State.IsEnabled then return end
         self.State.IsEnabled = true
         self:_createUI()
-        print("✓ PartFlingerV2 enabled — RightControl to hide/show")
+        print(" PartFlingerV2 enabled — RightControl to hide/show")
     end
     function NetworkClaim:Disable()
         if not self.State.IsEnabled then return end
@@ -20034,7 +20034,7 @@ function Modules.PartFlingerV2:Initialize()
             self.State.UI = nil
         end
         self.State.SelectedObject = nil
-        print("✓ PartFlingerV2 disabled")
+        print(" PartFlingerV2 disabled")
     end
     function NetworkClaim:Toggle()
         if self.State.IsEnabled then self:Disable() else self:Enable() end
